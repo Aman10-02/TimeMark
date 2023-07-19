@@ -54,27 +54,17 @@ const onDelete = async e => {
         "bookmark-" + bookmarkTime
     );
 
-    bookmarkElementToDelete.parentNode.removeChild(bookmarkElementToDelete);
-    // try{
-        // const response = await 
+    // bookmarkElementToDelete.parentNode.removeChild(bookmarkElementToDelete);
         chrome.tabs.sendMessage(activeTab.id, {
             type: "DELETE",
             value: bookmarkTime,
-        }
-        , (response) => {
+        }, (response) => {
             if(chrome.runtime.lastError){
                 console.error(chrome.runtime.lastError.message);
             }else{
-                console.log("response",response);
                 viewBookmarks(response);
             }
         })
-        // .then( (res) =>  console.log("response",res)).catch((err) => console.log(err));
-                        // response && viewBookmarks(response)
-    // }catch(error){
-    //     console.log(error)
-    //     console.error(chrome.runtime.lastError.message);
-    // }
 };
 
 const setBookmarkAttributes =  (src, eventListener, controlParentElement) => {
@@ -88,7 +78,6 @@ const setBookmarkAttributes =  (src, eventListener, controlParentElement) => {
 
 document.addEventListener("DOMContentLoaded", async () => {
   const activeTab = await getActiveTabURL();
-  console.log("first")
   const queryParameters = activeTab.url.split("?")[1];
   const urlParameters = new URLSearchParams(queryParameters);
 

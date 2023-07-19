@@ -1,16 +1,12 @@
-
-console.log("first");
 let youtubeLeftControls, youtubePlayer;
 let currentVideo = "";
 let currentVideoBookmarks = [];  
   
 
 const fetchBookmarks = () => {
-    console.log(" fetch")
     return new Promise((resolve) => {
         currentVideo && 
         chrome.storage.sync.get([currentVideo] , (obj) => {
-            console.log("Value currently is " + obj);
             resolve(obj[currentVideo] ? JSON.parse(obj[currentVideo]) : []);
           });
     });
@@ -26,28 +22,22 @@ const addNewBookmarkEventHandler = async () => {
             time: currentTime,
             desc: desc,
         };
-        console.log("newBookmark", newBookmark);
-        
         currentVideoBookmarks = await fetchBookmarks();
-        console.log(currentVideoBookmarks);
-        
         chrome.storage.sync.set({
             [currentVideo]: JSON.stringify([...currentVideoBookmarks, newBookmark].sort((a, b) => a.time - b.time))
         });
     }else{
-        console.log("not saved")
+        console.error("not saved")
     }
 
 }
 
 const newVideoLoaded = async () => {
-    console.log("inside func")
     const bookmarkBtnExists = document.getElementsByClassName("bookmark-btn")[0];
 
     // currentVideoBookmarks = await fetchBookmarks();
 
     if (!bookmarkBtnExists) {
-        console.log("btn")
       const bookmarkBtn = document.createElement("img");
 
       bookmarkBtn.src = chrome.runtime.getURL("images/bookmark.png");
@@ -57,13 +47,12 @@ const newVideoLoaded = async () => {
       youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
       youtubePlayer = document.getElementsByClassName('video-stream')[0];
 
-      youtubeLeftControls.appendChild(bookmarkBtn);
+      youtubeLeftControls && youtubeLeftControls.appendChild(bookmarkBtn);
       bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
     }
   };
   chrome.runtime.onMessage.addListener( (msg, sender, sendResponse) => {
     const { type, value, videoId } = msg;
-    console.log("msg = ", msg)
     if (type === "NEW") {
       currentVideo = videoId;
       newVideoLoaded();
@@ -72,13 +61,12 @@ const newVideoLoaded = async () => {
       youtubePlayer.currentTime = value;
       youtubePlayer.play();
     } else if ( type === "DELETE") {
+                                                         // not compatible in chrome
       // return new Promise( async (resolve, reject) => {
       //   try{
       //     currentVideoBookmarks = await fetchBookmarks();
-      //     console.log("value :", value)
       //     currentVideoBookmarks = currentVideoBookmarks.filter((b) => b.time != value);
       //     await chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) });
-      //     console.log("shvbfuwd sgdisuhvsd" , currentVideoBookmarks);
       //     resolve({res : "sucess"});        
       //   } catch (error) {
       //       reject(error);
@@ -87,10 +75,8 @@ const newVideoLoaded = async () => {
             const del =  async () => {
 
               currentVideoBookmarks = await fetchBookmarks();
-              console.log("value :", value)
               currentVideoBookmarks = currentVideoBookmarks.filter((b) => b.time != value);
               await chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) });
-              console.log("shvbfuwd sgdisuhvsd" , currentVideoBookmarks);
               sendResponse(currentVideoBookmarks);   
             }
             del();
