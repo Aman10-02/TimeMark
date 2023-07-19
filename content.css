@@ -1,0 +1,10 @@
+.bookmark-btn-div{
+    position: relative;
+}
+.bookmark-input-div{
+    position: absolute;
+    top: 100%;
+    z-index: 800000;
+    background-color: purple;
+
+}

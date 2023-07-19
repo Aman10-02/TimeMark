@@ -1,0 +1,40 @@
+{
+    "manifest_version" : 3,
+    "version" : "1.0.1",
+    "name" : "TimeMark",
+    "description": "TimeMark empowers you to mark significant timestamps with personalized titles, turning ordinary videos into a treasure trove of insights.",
+    "permissions": ["storage", "tabs"],
+    "host_permissions": ["https://*.youtube.com/*"],
+    "background":{
+        "service_worker":"background.js"
+    },
+    "content_scripts" : [
+        {
+            "matches" : [
+                "https://*.youtube.com/*"
+            ],
+            "js" : [
+                "content.js"
+            ],
+            "css" : [
+                "content.css"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+          "resources": [
+            "images/bookmark.png",
+            "images/play.png",
+            "images/delete.png",
+            "images/save.png"
+          ],
+          "matches": ["https://*.youtube.com/*"]
+        }
+    ],
+    "action" : {
+        "default_icon": "images/icon.png",
+        "default_title": "Youtube Bookmarker",
+        "default_popup":"popup/popup.html"
+    }   
+}
